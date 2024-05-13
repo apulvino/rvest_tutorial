@@ -333,7 +333,7 @@ child_rule = "#mw-pages li a"
 # scrape all the geo categories
 for(link in rel_link_list){
   
-  if(demo_mode == FALSE){ break }  # this takes a while
+  if(demo_mode == TRUE){ break }  # this takes a while
   
   geo_links <- w.list( rel_url = link, rule = parent_rule )
   
