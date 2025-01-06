@@ -1,12 +1,15 @@
 ---
 title: "Part 2: Web scraping practice"
-author: Dan Turner (dturner@u.northwestern.edu)
+author: Anthony Pulvino
 ---
 
 ```{r run this first}
+#install.packages("rvest")
 library(rvest) # Web scraping
+#install.packages("tidyverse")
 library(tidyverse) # Data wrangling
-library(RCurl) # Download files from the internet
+#install.packages("RCurl")
+library(RCurl) # Downloading files from the internet
 
 ```
 
