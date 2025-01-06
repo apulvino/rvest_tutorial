@@ -1,6 +1,6 @@
 ---
 title: "Part 1: Getting Started"
-author: Dan Turner (dturner@u.northwestern.edu)
+author: Anthony Pulvino
 ---
   
   
@@ -11,8 +11,11 @@ author: Dan Turner (dturner@u.northwestern.edu)
 This is an *R Notebook* that has code chunks inline with explanations. Run the code blocks by pressing the *Run* button while the cursor is in that code chunk, or by the key combination *Cmd+Shift+Enter*. Each code chunk behaves kind of like an isolated `.R` script file, but the results appear beneath the code chunk, instead of in the console.
 
 ```{r RUN THIS}
+#install.packages("rvest")
 library(rvest) # Web scraping
+#install.packages("tidyverse")
 library(tidyverse) # Data wrangling
+#install.packages("RCurl")
 library(RCurl) # Downloading files from the internet
 #install.packages("stringr")
 library(stringr)
@@ -21,13 +24,15 @@ demo_mode <- TRUE # Skip the the code that takes more than a few minutes to run
 
 ```
 
-If there are no errors, then you are ready to go onto the next part. Otherwise, you probably need to install some packages or dependencies.
-
-
+If there are no errors, then you are ready to go onto the next part. Otherwise, remove the hashes before the install.packages() functions and run those lines as well.
 
 # Reading web source code
 
-We are going to use a hidden web browser feature to understand the source code for pages we want to scrape.
+We are going to use a tool built-in to your web browser called Inspector view.
+This feature allows us to view the underlying HTML code responsible for visible aspects of the websites you view.
+
+For more information on HTML and other languages for building web-based applications visit:
+https://github.com/nuitrcs/IntroToHTMLCSSJS
 
 After opening a new window in a modern web browser such as Firefox, Chrome, Safari, or Edge, open some page from Wikipedia, such as https://en.wikipedia.org/wiki/Purple_Rain_(film).
 
@@ -44,19 +49,24 @@ Using this tool, you can browse the code and see how it was interpreted into the
 
 Web code is extremely variable in quality and style, and so the first step to extracting data from a webpage is always understanding how the data is displayed.
 
-## HTML versus CSS
+## HTML versus CSS versus JS
 
-Most websites use two major file types, HTML and CSS. HTML (hyper text markup language) is a data file that contains code representing text, links to pictures, tables of data, and everything else. CSS (cascading style sheets) contains code that browsers use to visually style the HTML. In the old days, HTML code would have tags for bold <b> and italics <em> and so on, but not anymore. For a long time, it has been best practices to do all styling using CSS classes.
+Most websites use two major file types, HTML and CSS along with JS.
+HTML (hyper text markup language) is a data file that contains code representing text, links to pictures, tables of data, and everything else.
+CSS (cascading style sheets) contains code that browsers use to visually style the HTML.
+JS (JavaScript) is a language used to create interactive elements on dynamic webpages that may change according to location or time, for example.
 
-We can scrape elements of websites using their HTML (hierarchically grouped) OR CSS (stylistically grouped). Advanced users might get use out of xpath as well, but that is beyond the scope of this workshop (sorry).
+We can scrape elements of websites using their HTML (hierarchically grouped) OR CSS (stylistically grouped).
+Advanced users might get use out of xpath as well, but that is beyond the scope of this workshop.
 
 ## Principles of scraping
 Because the code for websites is often poorly written (sorry, webdevs), I want to offer some guidelines to help decide when and how to develop a web scraping solution for your project.
 
-Rule 1. Don't scrape what you can download
+Rule 1. Don't scrape what you can download/access via API
 Rule 2. Don't scrape what you cannot easily clean
 Rule 3. Convert data into native data types ASAP (from strings)
-
+Application Programming Interface (API) refers to software which allows the communication of data or other functionalities.
+APIs can make scraping inefficient and in some cases scraping attempts may actively be blocked on websites that maintain an API.
 
 
 # Scraping Wikipedia
