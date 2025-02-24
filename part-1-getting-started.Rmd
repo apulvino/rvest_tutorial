@@ -1,6 +1,6 @@
 ---
-title: "Part 1: Getting Started"
-author: Anthony Pulvino
+title: 'Part 1: Getting Started'
+author: "Anthony Pulvino"
 ---
   
   
@@ -49,6 +49,16 @@ Using this tool, you can browse the code and see how it was interpreted into the
 
 Web code is extremely variable in quality and style, and so the first step to extracting data from a webpage is always understanding how the data is displayed.
 
+**Quick exercise!**
+Let's practice grabbing some of the html code associated with elements in the Wikipedia.org homepage.\
+Highlight and right click an element on the page, Click 'Inspect'\
+Right Click the highlighted portion of the html code in the Inspector View pane.\
+Hover over "Copy", then select 'Copy selector' from the dropdown.\
+
+Type in the chat the selector code for an element of the page and write which element it is!
+
+Here's the code picture of the day (02/20/2025) (e.g., `#mp-tfa-img > div > span > a > img`)
+
 ## HTML versus CSS versus JS
 
 Most websites use two major file types, HTML and CSS along with JS.
@@ -67,7 +77,6 @@ Rule 2. Don't scrape what you cannot easily clean
 Rule 3. Convert data into native data types ASAP (from strings)
 Application Programming Interface (API) refers to software which allows the communication of data or other functionalities.
 APIs can make scraping inefficient and in some cases scraping attempts may actively be blocked on websites that maintain an API.
-
 
 # Scraping Wikipedia
 *For our first example, we will scrape some lists from Wikipedia.*
@@ -94,6 +103,11 @@ Here is a quick breakdown of these tags:
 `a` means 'anchor link' = normal hyperlink
 `class` is for CSS styling, which we refer to with `#` and `.` like `#mw-category-group`
 
+**Quick exercise!**
+While you have the Selector tool open, click somewhere in the pane and CTRL+F.\
+Have a search for one of the tags above... Tell us in the chat which one you searched and what content from the page is inside of it?\
+Are there many elements of the page associated with that overarching tag? How many?
+
 We only need the names of the films, but if we wanted to know more about these films later (say, their release date or budget), we might want the link to their Wikipedia page.
 
 Check out one of the movie's pages to get a sense for the data potential: https://en.wikipedia.org/wiki/Purple_Rain_(film)
@@ -111,61 +125,130 @@ films_set_html <- read_html("https://en.wikipedia.org/wiki/Category:Films_set_in
 
 films_shot_html <- read_html("https://en.wikipedia.org/wiki/Category:Films_shot_in_Minnesota")
 
-# Peek... word is from the stringr package and extracts words from text-based, string objects... to get the html object/link converted to a text-based string object we used html_text from rvest
-word(html_text(films_shot_html), 100, 200)
+# to get the html object/link converted to a text-based string object we used html_text from rvest
+html_text(films_shot_html)
+```
+
+**Quick exercise!**
+When running html_text above, the output is not very comprehensible.\
+We can use the function word() (from the stringr package) to subset certain portions of the text\
+Use the word function to explore making subsets of text from the original output we got from running html_text above
+
+```{r}
+# function: word()
+# input: html_text(films_shot_html)
+
+#<your code here!>
 
 ```
-You should see the list punctuated by new line tags (`\n`),
+
+**Another Quick exercise!**
+You can see the results of our subset are still a bit tricky to parse... 
+Is there another R function we could use to get a list of the movies in a more readable format?
+```{r}
+
+#<your code here!>
+
+```
+
 
 ## Use web developer tools
-Next we will scrape the data we want using by using the information from Inspector View to write some inclusion/exclusion rules. Usually you can simply right-click an example of the information you want in Inspector View and use that to build your rule. *When you right-click the line in Inspector View, hover over 'Copy' and click 'Copy Selector'.* On the page Films Set in Minnesota this gives us:
+Next we will scrape the data we want by using the information from Inspector View to write some inclusion/exclusion rules. Usually you can simply right-click an example of the information you want in Inspector View and use that to build your rule. *When you right-click the line in Inspector View, hover over 'Copy' and click 'Copy Selector'.* On the page Films Set in Minnesota this gives us:
 
 ```
 #mw-pages > div > div > div:nth-child(1) > ul > li:nth-child(1) > a
 ```
 
-If we paste that into the `html_nodes()` function, it returns the first title of the first film on the page ('The Adventures of Rocky and Bullwinkle').
+If we paste that into the `html_nodes()` function
 
 ```{r}
+
 films_set_html %>%
-  html_nodes('#mw-pages > div > div > div:nth-child(1) > ul > li:nth-child(1) > a') %>%
-  html_text() # this extracts text from within HTML tags
+  html_nodes('#mw-pages > div > div > div:nth-child(1) > ul > li:nth-child(1) > a')
+
 ```
 
-But we want every film, not just the first one. If you look at the rule, you will see two references to `nth-child(1)`, which is a newer way to specify CSS styles based on parent-child relationships and order (with ':').
+**Quick exercise!**
+You can see that the above code returns some useful information about one of the films in the list of those set in Minnesota... but if we were doing an analysis and wanted to save just the title for some kind of analysis of movies across states...
+What other rvest function would we need to pipe to?
+Hint: we've already used it once before...
+
+```{r}
+
+films_set_html %>%
+  html_nodes('#mw-pages > div > div > div:nth-child(1) > ul > li:nth-child(1) > a') %>%
+  # <add function call here>
+
+```
+
+
+But we want every film, not just the first one. If you look at the rule, you will see two references to `nth-child(1)`, which is a way to specify CSS styles based on parent-child relationships and order (with ':').
 
 Delete it to include all of the films in all of the categories:
 
 ```{r}
+
 films_set_html %>%
   html_nodes('#mw-pages > div > div > div > ul > li > a') %>%
   html_text() # this extracts text from within HTML tags
+
 ```
+
+But what do we mean by parent child relationships and order here...?
+Take a moment to adjust the numerical options in the original line of code that included div:nth-child
+
+What does div:nth-child() actually specify? li:nth-child()?
+```{r}
+# play with numeric values to nth-child spec here:
+films_set_html %>%
+  html_nodes('#mw-pages > div > div > div:nth-child(1) > ul > li:nth-child(1) > a') %>%
+  html_text()
+
+```
+
+
 
 Now let's finish the job by storing the links and titles in R variables.
 
+We can start by grabbing all of the movie titles that we were looking at earlier, now we'll store them as a variable "films_set_titles"
 ```{r}
 # Titles, same as above
 films_set_titles <- films_set_html %>%
   html_nodes('#mw-pages > div > div > div > ul > li > a') %>% 
   html_text() 
+films_set_titles
+```
+Next we'll use the html_attr() function to get the portion of the webpage links 
+```{r}
 
 # The rule works equally well for the other link, too
 films_set_links <- films_set_html %>%
   html_nodes('#mw-pages > div > div > div > ul > li > a') %>%
   html_attr("href")
+films_set_links
+```
 
+```{r}
 # Join the titles and links as a data frame
 films_set_mn <- data.frame("title" = films_set_titles, "link" = films_set_links)
+films_set_mn
+```
 
+Now we can have a peek at the first couple of films set in minnesota
+```{r}
 # Peek
 head(films_set_mn)
+```
 
+Let's remove some of the variables here that we no longer need.
+```{r}
 # Cleanup
 rm(films_set_html, films_set_titles, films_set_links)
 ```
 
+**Quick exercise!**
 We follow the same process to generate the films_shot list:
+Use the short code blocks from above as a template, and write the same set of variables for the "films_shot_html" variable we initialized earlier.
 
 ```{r}
 
@@ -234,25 +317,14 @@ This is something you should note about websites you're scraping--how do you get
 One solution to this issue is to scrape every page and remove duplicates we find. But, this will take a lot of time and it will burden our post-processing. Instead, we will use the recursive property of pagination (that the next page can have a next page, which can have a next page) to crawl all pages, one at a time.
 
 ```{r}
-# function to scrape links and names
-w.scrape <- function(full_url, rule){
+###### We can write a couple of convenience functions to make our job of scraping a bit simpler for this project
+###### The first function will take full web URL ("full_url") and the html encoding for an attribute of interest ("rule")
 
-  # get titles
-  the_titles <- read_html(full_url) %>%
-    html_nodes( rule ) %>% 
-    html_text()
-  
-  # get links
-  the_links <- read_html(full_url) %>%
-    html_nodes( rule ) %>% 
-    html_attr('href')
-  
-  # as a dataframe
-  df <- data.frame("titles" = the_titles, "links" = the_links,
-                   stringsAsFactors = FALSE) 
-  
-  return ( df)
-}
+## The first two lines write a variable containing user input URLs, the base URL is wikipedia, 
+## but the extension to the specific page after that is input by the user
+## the next line sets a to.continue variable, this variable stores information about whether there's a second page
+## the if statement evaluates the content of the variable, if there is a next page/TRUE, we store the successive URLs
+## for the successive pages storing all the links as we go
 
 # return the urls of the next pages
 w.tree <- function(rel_url){
@@ -279,9 +351,43 @@ w.tree <- function(rel_url){
     return(next.page)
   }
 }
+```
+
+```{r}
+
+## This function takes a full_url and a selector string rule as input and returns a dataframe containing two columns
+## The first column is the_titles of movies on the wikipedia page
+## the second column is the_links to the wikipedia pages for each of those movies
+w.scrape <- function(full_url, rule){
+
+  # get titles
+  the_titles <- read_html(full_url) %>%
+    html_nodes( rule ) %>% 
+    html_text()
+  
+  # get links
+  the_links <- read_html(full_url) %>%
+    html_nodes( rule ) %>% 
+    html_attr('href')
+  
+  # as a dataframe
+  df <- data.frame("titles" = the_titles, "links" = the_links,
+                   stringsAsFactors = FALSE) 
+  
+  return ( df)
+}
+```
 
 
+```{r}
 # convenience function to make a list of urls and their text from wikipedia category pages
+#### Here the function takes the relative URL (after the wikipedia, "root"), 
+#### and gets all successive page links (you can see the call to w.tree on the second line)
+#### the next line writes an empty dataframe 
+#### in the for loop that follows, we iterate over the URLs and store within the dataframe
+#### the listed information on the page (our case will be the movie titles), 
+#### and the relative links associated with each movie's wiki page
+
 w.list <- function(rel_url, rule){
   
   root = "https://en.wikipedia.org"
@@ -301,8 +407,15 @@ w.list <- function(rel_url, rule){
 
 ```
 
-The reason why we're using loops is so that we can pause between iterations using Sys.sleep(). This is important if you want to be a friendly scraper, but ultimately much slower than allowing R to use parallel connections. 
+When we connect to a web page we increase traffic, and if we're doing heavy duty scraping this traffic can burden the host site.
+We're using loops so that we can pause between iterations using Sys.sleep()... this allows us to scrape in a more friendly way, giving the host server more time between our attempts to access webpages of interest.
 
+
+Here, we can use the functions we wrote above. We put them to use in this block of code by grabbing all of the films set in chicago.\
+We start by defining the rule to get the movie titles (child_rule)\
+Then we make our call to the function w.list() passing two arguments,\
+The relative URL, or the unique portion associated with the specific movie wikipedia page\
+and the html encoding for those movie titles.
 ```{r message=FALSE, warning=FALSE}
 
 child_rule = "#mw-pages li a"
@@ -310,20 +423,37 @@ child_rule = "#mw-pages li a"
 # let's see how it works
 films_set_chicago <- w.list(rel_url = "/wiki/Category:Films_set_in_Chicago",
                             rule = child_rule)
+```
+
+When we call our films_set_chicago variable we get a very nice dataframe of the relevant information
+```{r}
+films_set_chicago
 
 ```
 
 I get 400 films, which means we have just under 2 pages of items.
-
 That should be all of them!
 
+**Quick exercise!**
+Let's zoom out and get global... Pick a country (home country or country of interest). \
+Update the rel_url argument according to which country you selected... \
+Tell us in the chat which country you picked and how many movies are set there!
+```{r}
+
+# Give it a try!
+w.list(rel_url = #<your rel_url here!>,
+       rule = child_rule)
+
+
+```
 
 
 ## Scale it up
 
 We could scrape every city or every state, or both, using the same basic methods as we employed for the Chicago list and the URLS. Doing so means touching many more HTML pages, increasing the chances we will hit an error.
 
-Flow control is important for handling exceptions, so you use `next` and `break`, depending on whether you want the loop to skip the current item, or stop altogether.
+Flow control refers to a mechanism that regulates the communication of data between two computers. This concept is important for handling exceptions (managing how a program responds to certain conditions).
+We can use `next` and `break` to handle exceptions where we want the loop to skip the current item, or stop altogether.
 
 *The code chunk below will scrape all of the state-level pages of films on Wikipedia.*
 
@@ -374,7 +504,7 @@ for(link in rel_link_list){
   }#inner
 }#outer
 
-rm(link, i, geo_links, rel_link_list) # cleanup
+#rm(link, i, geo_links, rel_link_list) # cleanup
 
 # saving this so you can load it without running it
 # saveRDS(geo_content, "geo_content.rds") # 6062 films set in various states
