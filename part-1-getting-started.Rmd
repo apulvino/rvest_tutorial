@@ -34,7 +34,7 @@ This feature allows us to view the underlying HTML code responsible for visible 
 For more information on HTML and other languages for building web-based applications visit:
 https://github.com/nuitrcs/IntroToHTMLCSSJS
 
-After opening a new window in a modern web browser such as Firefox, Chrome, Safari, or Edge, open some page from Wikipedia, such as https://en.wikipedia.org/wiki/Purple_Rain_(film).
+After opening a new window in a modern web browser such as Firefox, Chrome, Safari, or Edge, open some page from Wikipedia, such as https://en.wikipedia.org/wiki/Purple_Rain_(film)
 
 ## Using Inspector view
 (Tested on Chrome, Safari, Edge and Firefox)
@@ -138,7 +138,7 @@ Use the word function to explore making subsets of text from the original output
 # function: word()
 # input: html_text(films_shot_html)
 
-#<your code here!>
+word(html_text(films_shot_html), 413, 745)
 
 ```
 
@@ -147,7 +147,7 @@ You can see the results of our subset are still a bit tricky to parse...
 Is there another R function we could use to get a list of the movies in a more readable format?
 ```{r}
 
-#<your code here!>
+word(html_text(films_shot_html), 413, 745) %>% str_split(pattern = "\n")
 
 ```
 
@@ -177,7 +177,7 @@ Hint: we've already used it once before...
 
 films_set_html %>%
   html_nodes('#mw-pages > div > div > div:nth-child(1) > ul > li:nth-child(1) > a') %>%
-  # <add function call here>
+  html_text()
 
 ```
 
@@ -253,23 +253,23 @@ Use the short code blocks from above as a template, and write the same set of va
 ```{r}
 
 # Titles, same as above
-films_shot_titles <- films_shot_html %>%
+films_set_titles <- films_set_html %>%
   html_nodes('#mw-pages > div > div > div > ul > li > a') %>% 
   html_text() 
 
 # The rule works equally well for the other link, too
-films_shot_links <- films_shot_html %>%
+films_set_links <- films_set_html %>%
   html_nodes('#mw-pages > div > div > div > ul > li > a') %>%
   html_attr("href")
 
 # Join the titles and links as a data frame
-films_shot_mn <- data.frame("title" = films_shot_titles, "link" = films_shot_links)
+films_set_mn <- data.frame("title" = films_set_titles, "link" = films_set_links)
 
 # Peek
-head(films_shot_mn)
+head(films_set_mn)
 
 # Cleanup
-rm(films_shot_html, films_shot_titles, films_shot_links)
+rm(films_set_html, films_set_titles, films_set_links)
 ```
 
 
@@ -514,6 +514,5 @@ for(link in rel_link_list){
 This just shows how you can easily scale-up some simple scraping script into something with more of an appetite.
 
 In the next part we will practice some web scraping, then we will build on this in one more part.
-
 
 
